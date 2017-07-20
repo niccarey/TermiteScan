@@ -49,6 +49,7 @@
 #define DEPTHWIDTH 640
 #define DEPTHHEIGHT 480
 #define FRAMERATE 30
+#define FRAMERATE_LIM 28
 
 // global vars (that we might want to change)
 unsigned char g_movflag = 0x00;
@@ -210,29 +211,7 @@ void colorFrame(const void* cpoint, bfs::path c_path, int framenum)
     rgb8_planar_view_t colIm = planar_rgb_view(COLWIDTH, COLHEIGHT, colR, colG, colB, COLWIDTH);
     std::string saveLoc = c_path.string();
     boost::gil::jpeg_write_view(saveLoc, colIm, 95);
-
-
-    // REINSERT
-
-    /*bfs::ofstream colfile;
-    std::string c_file = "col_frame_" + std::to_string(framenum) + ".dat";
-    c_path /= c_file;
-
-    int arraysize = 0;
-    if (hresflag){arraysize = COLWIDTH*COLHEIGHT*3;}
-    else {arraysize = COL_SWIDTH*COL_SHEIGHT*3;}
-
-    colfile.open(c_path, std::ios::out | std::ofstream::binary);
-
-    // could try and save as ppm but would have to put an endline on each line, slightly slower
-    // rgbfiles are 3*8 bites
-    // unaddressable byte error here???
-    colfile.write(static_cast<const char*>(cpoint), arraysize);
-    colfile.close();
-
-    // push frame number into queue
-    timestampList.push(framenum); //cnum
-*/
+    
 }
 
 void colCompress()
@@ -256,13 +235,11 @@ void colCompress()
 
         while (!(timestampList.pop(filenum)))
         {
-            // these sleep commands aren't actually doing anything
             boost::this_thread::sleep_for( boost::chrono::milliseconds(comp_wait) );
             // check in case movie has been ended in this time
             if (!(g_movflag & 0x01)) break;
         }
 
-        // at low framerates, loop is exiting while waiting for data
         unsigned char readBuf[1024*3]; // 1024 bytes per channel
         std::vector<unsigned char> rBuf;
         std::vector<unsigned char> gBuf;
@@ -282,7 +259,6 @@ void colCompress()
         bool fileopen = false;
         int retry = 0;
 
-        // segfault seems to be caused by file deletion (?)
         while (!fileopen && retry<5)
         {
             try{
@@ -291,7 +267,6 @@ void colCompress()
                 fileopen = true;
             }
             catch(...){
-                // shit all, right now
             }
         }
 
@@ -322,10 +297,6 @@ void colCompress()
 
             boost::gil::jpeg_write_view(saveLoc, colIm, 95);
 
-            // delete .dat file - causing segfault???
-            // segfault on call, so not getting a useful error message
-            // problem is related to speed - if I slow the system down (by, say, trying to trace memleaks), it does not appear
-            // would still like to know why this is happening?? (also there is a possibility that the system is fast enough that I don't even need to have a separate thread here. Hmm.
             // Try further delay:
             if (!closeSuccess)
             {
@@ -338,7 +309,7 @@ void colCompress()
 
     bchrono::milliseconds compcount = bchrono::duration_cast<bchrono::milliseconds>(bchrono::system_clock::now() - compstart);
 
-    std::cout << "Compression took " << compcount.count() << "ms " <<std::endl;
+    //std::cout << "Compression took " << compcount.count() << "ms " <<std::endl;
 
 }
 
@@ -360,8 +331,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     // important: DO NOT TAKE SNAPSHOTS IF MOVIE IS RUNNING
     // don't want to mess with the framerate
+    
+    // for future: pick up any key, then do a switch statement
 
-    // surely this is better handled by a switch. Anyway
     if (key == GLFW_KEY_A && action == GLFW_PRESS){
         //Take a snapshot of all frames
         if (!(g_movflag & 0x01))
@@ -418,19 +390,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     }
 
-    if (key == GLFW_KEY_L && action == GLFW_PRESS)
-    {
-        // reassign colour and depth frame rates
-        if (!(g_movflag & 0x01))
-        {
-            std::cout << "Warning: Framerates reassigned" << std::endl;
-        }
-        if (s_movflag)
-        {
-            colframerate = col_fps_new;
-            depthframerate = dep_fps_new;
-        }
-    }
+    //if (key == GLFW_KEY_L && action == GLFW_PRESS)
+    //{
+    //    // reassign colour and depth frame rates
+    //    if (!(g_movflag & 0x01))
+    //    {
+    //        std::cout << "Warning: Framerates reassigned" << std::endl;
+    //    }
+    //    if (s_movflag)
+    //    {
+    //        colframerate = col_fps_new;
+    //        depthframerate = dep_fps_new;
+    //    }
+    // }
+    
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         // Toggle colour stream flag
@@ -542,7 +515,6 @@ try
     depthframerate = colframerate;
 
     // change stack size to handle file compression quickly
-    // complaining that the below is set to uninitialized bytes, not sure if that's actually a problem but probably explains the warning returned.
     struct rlimit rl;
     const rlim_t kStackSize = 16*1024*1024; // set to 16MB, should be more than enough
     rl.rlim_cur = kStackSize;
@@ -642,20 +614,6 @@ try
     depthsaveparam.sched_priority = 90;
     storeparam.sched_priority = 85;*/
 
-    // not sure which realsense option I'm trying to set here. Range?
-    // note there is an option for RGB image sharpness, and exposure - these might help improve image quality?
-    /*  struct option { rs::option opt; double min, max, step, value; };
-    option o = {(rs::option)15};
-
-    //    std::string hint = dev->get_option_description(o);
-    //    std::cout << hint << std::endl;
-
-    dev->get_option_range(o.opt, o.min, o.max, o.step);
-    try { o.value = dev->get_option(o.opt); } catch(...) {}
-
-    dev->set_option(o.opt, 3);
-    */
-
 
     while(!glfwWindowShouldClose(win))
     {
@@ -679,7 +637,7 @@ try
         if (g_movflag & 0x01)
         {
 
-            if (colframerate < 28)
+            if (colframerate < FRAMRATE_LIM)
             {
                 if ((cstamp-c_incr) >= c_interval)
                 {
