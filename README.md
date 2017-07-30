@@ -15,7 +15,7 @@ Effective make call:
 qmake DIR/TermiteScan.pro -r -spec linux-g++-64 CONFIG+=release
 
 # How it works
-At the time of development, Intel had only provided the most basic SDK for linux users trying to apply the RealSense to their applications. For circumstantial reasons, we required a high-precision RGBD recording that kept a very steady framerate and stored depth and colour synchronously (to a precision of at least 1ms). We found it was simpler to write our own code than to try to adapt an existing function. That said, Intel have demonstrated that they are committed to maintaining the linux developer community, and may render this package obselete in the near future.
+At the time of development, Intel had only provided the most basic SDK for linux users trying to apply the RealSense to their applications. We required a high-precision RGBD recording that kept a very steady framerate and stored depth and colour synchronously (to a precision of at least 1ms). We found it was simpler to write our own code than to try to adapt an existing function. That said, Intel have demonstrated that they are committed to maintaining the linux developer community, and may render this package obsolete in the near future.
 
 Provided hardware meets specifications and librealsense is correctly installed (follow librealsense install procedure linked above), the executable should run out of the box. It displays and records high resolution RGB (1920x1080) and depth (640x480) streams. RGB output is JPEG at 95% compression, to save space. Streamed depth output is saved as raw unit16 frames. Raw IR frames are available as single snapshot frames, but changing the code to add these to the recorded stream would be relatively trivial.
 
