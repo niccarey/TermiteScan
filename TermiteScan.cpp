@@ -1,8 +1,12 @@
 /* Program to view and record multiple RealSense streams for imaging purposes.
+ *
+ * User input: save folder extension (expects int), framerate (expects int <=30)
  * Compatable with Ubuntu 14.04 and 16.10
  * This package will only compile and run with an up-to-date librealsense package and uvcvideo kernel.
+ *
  * See Readme.md for details
  */
+
 
 // include standard libraries
 #include <iostream>
@@ -12,7 +16,6 @@
 #include <map>
 #include <atomic>
 
-// include some special libraries
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -129,12 +132,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         if ((action == GLFW_PRESS) && (!(g_movflag & 0x01)))
         {
-             int init_val = 40;
+             int init_val = 40;             
+             int newval;
              int auto_on = dev->get_option(rs::option::color_enable_auto_exposure);
 
              if (auto_on){  dev->set_option(rs::option::color_exposure, init_val); }
              else {
-                int newval;
                 int cval = dev->get_option(rs::option::color_exposure);
 
                 if (cval < 900)
