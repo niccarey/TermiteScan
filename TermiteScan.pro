@@ -24,7 +24,10 @@ LIBS += -L$$DESTDIR/ -lrealsense
 LIBS += -pthread
 
 SOURCES += \
-    TermiteScan.cpp
+    TermiteScan.cpp \
+    depthimageframe.cpp \
+    irimageframe.cpp \
+    colimageframe.cpp
 
 LIBS += -L$$DESTDIR/ -lrealsense
 LIBS += -L/usr/lib/x86_64-linux-gnu -lboost_system
@@ -38,4 +41,7 @@ LIBS += -pthread
 
 #PRE_TARGETDEPS += $$DESTDIR/librealsense.a
 
-HEADERS +=
+HEADERS += \
+    depthimageframe.h \
+    irimageframe.h \
+    colimageframe.h
