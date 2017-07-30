@@ -1,5 +1,5 @@
 # TermiteScan
-RealSense C application beta for termite scanning and tracking
+RealSense C++ application beta for termite scanning and tracking
 Tested on: Ubuntu 14.04, Ubuntu 16.10
 Hardware requirements: at least 8GB RAM (pref 16), 3.4GHz . Performance may be impacted if hardware doesn't meet these specs. Also note, I have not tried to run this code on a microcontroller.
 
