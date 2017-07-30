@@ -1,3 +1,32 @@
+/* irimageframe.h
+ *
+ * Description:
+ *   header file for irImageFrame class
+ *   Streams raw ir byte data to a .dat file
+ *
+ * Functions:
+ *   ir_size_calc - calculates needed buffer size for rgb conversion
+ *   save_ir_frame - takes a frame from a RealSense library-compatible depth image stream,
+ *   saves to file
+ *
+ * Input:
+ *   device pointer
+ *   path to save directory
+ *   filename
+ *
+ * Output:
+ *   none
+ *
+ * Requirements:
+ *   librealsense
+ *   boost/filesystem
+ *   fstream
+ *
+ * Thread safe? YES
+ *
+ * Extendable? YES
+ */
+
 #ifndef IRIMAGEFRAME_H
 #define IRIMAGEFRAME_H
 
