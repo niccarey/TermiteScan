@@ -7,19 +7,19 @@ CONFIG -= qt
 
 CONFIG(release, debug|release){
     TARGET = TermiteScan-run
-    DESTDIR = $$PWD/../TermiteScan-rel_v2.1
+    DESTDIR = $$PWD/../TermiteScan-rel_v4.0
 }
 
 QMAKE_CXXFLAGS += -std=c++11 -fpermissive -O3
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers -Wno-unused-variable -Wno-unused-parameter
 CONFIG += link_pkgconfig
-PKGCONFIG += glfw3 gl glu libusb-1.0
+PKGCONFIG += glfw3 gl glu libusb-1.0 opencv
 
 INCLUDEPATH += /home/nic/Documents/librealsense-master/include/
 INCLUDEPATH += /home/nic/Documents/librealsense-master/src/
 INCLUDEPATH += /usr/include/
 
-LIBS += -L$$DESTDIR/ -lrealsense
+LIBS += -L$$DESTDIR/ -lrealsense2
 
 LIBS += -pthread
 
