@@ -14,36 +14,37 @@
 #endif
 
 #include <fstream>
+#include <iostream>
 
 // Include the librealsense C++ header file
 
-#include <librealsense/rs.hpp>
+#include <librealsense2/rs.hpp>
 
 colImageFrame::colImageFrame(int c_width, int c_height)
 {
     width = c_width;
     height = c_height;
-
 }
 
-int colImageFrame::col_size_calc() { return (width*height);}
+int colImageFrame::col_size_calc() {return (width*height);}
 
-void colImageFrame::save_col_frame(rs::device* dev, boost::filesystem::path c_path, std::string c_file)
+void colImageFrame::save_col_frame(const void* cpoint, boost::filesystem::path c_path, std::string c_file)
 {
     // use this for single, unsynchronised frame-grabbing
-
     using namespace boost::gil;
-
     int arraysize = this->col_size_calc();
+    // need pointer to frame data ...
+    //rs2::frame colframe = frames->get_color_frame();
+    //const void * cpoint = colframe.get_data();  //dev->get_frame_data(rs::stream::color);
 
-    const void * cpoint = dev->get_frame_data(rs::stream::color);
-    c_path /= c_file;           // adds cfile to c_path
+    c_path /= c_file;                            // adds cfile to c_path
 
     unsigned char colR[arraysize];
     unsigned char colG[arraysize];
     unsigned char colB[arraysize];
 
     const char* bufp = static_cast<const char*>(cpoint);
+
 
     for (int j=0; j<arraysize; ++j){
         const char* cind = bufp + 3*j;
@@ -55,8 +56,8 @@ void colImageFrame::save_col_frame(rs::device* dev, boost::filesystem::path c_pa
     // in theory should be able to copy directly to an interleaved view with appropriate iterator
     rgb8_planar_view_t colIm = planar_rgb_view(width, height, colR, colG, colB, width);
     std::string saveLoc = c_path.string();
-    // save at 95% compression
     boost::gil::jpeg_write_view(saveLoc, colIm, 95);
+    std::cout << "Color frame stored" << std::endl;
 
 }
 
