@@ -42,7 +42,7 @@
 #include <fstream>
 
 // Include the librealsense C++ header file
-#include <librealsense/rs.hpp>
+#include <librealsense2/rs.hpp>
 
 class depthImageFrame {
     int width;
@@ -53,7 +53,7 @@ class depthImageFrame {
 
     int array_size_calc();
 
-    void save_d_frame(rs::device* dev, boost::filesystem::path d_path, std::string d_file);
+    void save_d_frame(const void* cpoint, boost::filesystem::path d_path, std::string d_file);
     void save_d_frame(const void* dpoint, boost::filesystem::path d_path, int framenum);
 
 };

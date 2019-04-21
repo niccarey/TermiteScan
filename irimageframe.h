@@ -37,7 +37,7 @@
 #include <fstream>
 
 // Include the librealsense C++ header file
-#include <librealsense/rs.hpp>
+#include <librealsense2/rs.hpp>
 
 
 class irImageFrame
@@ -48,9 +48,10 @@ class irImageFrame
 public:
     irImageFrame( int i_width,int i_height);
 
-    int ir_size_calc();
+    int array_size_calc();
 
-    void save_ir_frame(rs::device* dev, boost::filesystem::path ir_path, std::string ir_file);
+    void save_ir_frame(const void* irpoint, boost::filesystem::path ir_path, std::string ir_file);
+    void save_ir_frame(const void* irpoint, boost::filesystem::path ir_path, int framenum);
 
 };
 
